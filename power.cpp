@@ -18,7 +18,7 @@
 #endif // MICROBIT_CODAL
 
 
-enum class PowerWakeup {
+enum class PowerUpSource {
     A  = MICROBIT_ID_BUTTON_A,
     B  = MICROBIT_ID_BUTTON_B,
     P0 = MICROBIT_ID_IO_P0,
@@ -26,9 +26,17 @@ enum class PowerWakeup {
     P2 = MICROBIT_ID_IO_P2
 };
 
-enum class PowerDown {
+
+enum class PowerDownControl {
     prevent,
     allow
+};
+
+
+enum class PowerDownMode {
+    //%continue
+    proceed,
+    wait
 };
 
 
@@ -39,7 +47,19 @@ int timerEventValue  = 1;
 #endif // MICROBIT_CODAL
 
 /**
-  * Pause until a wake up event occurs, and request power down when idle.
+  * Request power-down when the next idle
+  */
+//%
+void deepSleepAsync() {
+#if MICROBIT_CODAL
+    uBit.power.deepSleepAsync();
+#else
+    uBit.sleep(0);
+#endif
+}
+
+/**
+  * Request power-down when the next idle and wait
   */
 //%
 void deepSleep() {
@@ -50,14 +70,23 @@ void deepSleep() {
 #endif
 }
 
-
 /**
-  * Request power down when idle, and return immediately.
+  * Request power-down when the next idle
+  * @param mode If continue, then return immediately; if wait, then pause until a power-up event occurs 
   */
 //%
-void powerDownRequest() {
+void powerDownRequest(PowerDownMode mode) {
 #if MICROBIT_CODAL
-    uBit.power.deepSleepAsync();
+    switch ( mode)
+    {
+        case PowerDownMode::proceed:
+            uBit.power.deepSleepAsync();
+            break;
+
+        case PowerDownMode::wait:
+            uBit.power.deepSleep();
+            break;
+    }
 #else
     uBit.sleep(0);
 #endif
@@ -65,11 +94,11 @@ void powerDownRequest() {
 
 
 /**
-  * Pause for a fixed interval, and request power down when idle.
+  * Pause for a fixed interval, requesting power-down when next idle.
   * @param interval The period of time to pause, in milliseconds.
   */
 //%
-void deepSleepPause(unsigned interval) {
+void powerDownFor(int interval) {
 #if MICROBIT_CODAL
     uBit.power.deepSleep(interval);
 #else
@@ -79,15 +108,15 @@ void deepSleepPause(unsigned interval) {
 
 
 /**
-  * Do something repeatedy using a wake-up timer.
+  * Do something repeatedy using a power-up timer.
   * @param interval time (in ms) for the timer.
   * @param body code to execute
   */
 //%
-void wakeEvery(unsigned interval, Action body) {
+void powerUpEvery(int interval, Action body) {
 #if MICROBIT_CODAL
     registerWithDal( MICROBIT_ID_MAKECODE_POWER, timerEventValue, body);
-    // CODAL_TIMER_EVENT_FLAGS_WAKEUP makes the timer event trigger power up
+    // CODAL_TIMER_EVENT_FLAGS_WAKEUP makes the timer event trigger power-up
     system_timer_event_after( 0, MICROBIT_ID_MAKECODE_POWER, timerEventValue, CODAL_TIMER_EVENT_FLAGS_WAKEUP);
     system_timer_event_every( interval, MICROBIT_ID_MAKECODE_POWER, timerEventValue++, CODAL_TIMER_EVENT_FLAGS_WAKEUP);
 #else
@@ -97,20 +126,20 @@ void wakeEvery(unsigned interval, Action body) {
 
 
 /**
-  * Prevent or allow power down during deepSleep.
+  * Prevent or allow power-down during deepSleep.
   * Prevent and allow requests should occur in pairs.
   * The default is to allow.
 */
 //%
-void powerDownEnable(PowerDown choice) {
+void powerDownControl(PowerDownControl control) {
 #if MICROBIT_CODAL
-    switch ( choice)
+    switch ( control)
     {
-        case PowerDown::prevent:
+        case PowerDownControl::prevent:
             uBit.power.powerDownDisable();
             break;
 
-        case PowerDown::allow:
+        case PowerDownControl::allow:
             uBit.power.powerDownEnable();
             break;
 
@@ -122,10 +151,10 @@ void powerDownEnable(PowerDown choice) {
 
 
 /**
-  * Determine if power down during deepSleep is enabled
+  * Determine if power-down during deepSleep is allowed
 */
 //%
-bool powerDownIsEnabled() {
+bool powerDownIsAllowed() {
 #if MICROBIT_CODAL
     return uBit.power.powerDownIsEnabled();
 #else
@@ -135,29 +164,29 @@ bool powerDownIsEnabled() {
 
 
 /**
-  * Set whether the source should trigger power save wake-up.
-  * @param source the source to set
-  * @param wake true to trigger wake-up or false for no wake-up
+  * Set whether the source should trigger power-up.
+  * @param source the PowerUpSource to set
+  * @param enable true to trigger power-up or false for no power-up
   */
 //%
-void wakeOn(PowerWakeup source, bool wake) {
+void powerUpEnable(PowerUpSource source, bool enable) {
 #if MICROBIT_CODAL
     switch ( source)
     {
-        case PowerWakeup::A:
-          uBit.buttonA.wakeOnActive(wake ? 1 : 0);
+        case PowerUpSource::A:
+          uBit.buttonA.wakeOnActive(enable ? 1 : 0);
           break;
 
-        case PowerWakeup::B:
-          uBit.buttonB.wakeOnActive(wake ? 1 : 0);
+        case PowerUpSource::B:
+          uBit.buttonB.wakeOnActive(enable ? 1 : 0);
           break;
 
-        case PowerWakeup::P0:
-        case PowerWakeup::P1:
-        case PowerWakeup::P2:
+        case PowerUpSource::P0:
+        case PowerUpSource::P1:
+        case PowerUpSource::P2:
         {
             MicroBitPin *pin = getPin((int)source);
-            pin->wakeOnActive(wake ? 1 : 0);
+            pin->wakeOnActive(enable ? 1 : 0);
             break;
         }
         default:
@@ -168,35 +197,26 @@ void wakeOn(PowerWakeup source, bool wake) {
 
 
 /**
-  * Set the source to trigger power save wake-up.
-  * @param source the source to set
+  * Determine if the source will trigger power-up.
+  * @param source the source to check
+  * @return true if power-up is enabled
   */
 //%
-void wakeOnEnable(PowerWakeup source) {
-  wakeOn(source, true);
-}
-
-/**
-  * Determine if the source will trigger power save wake-up.
-  * @param source the source to set
-  * @return true is wake-up is enabled
-  */
-//%
-bool wakeOnIsEnabled(PowerWakeup source) {
+bool powerUpIsEnabled(PowerUpSource source) {
 #if MICROBIT_CODAL
     switch ( source)
     {
-        case PowerWakeup::A:
+        case PowerUpSource::A:
           return uBit.buttonA.isWakeOnActive() ? true : false;
           break;
 
-        case PowerWakeup::B:
+        case PowerUpSource::B:
           return uBit.buttonB.isWakeOnActive() ? true : false;
           break;
         
-        case PowerWakeup::P0:
-        case PowerWakeup::P1:
-        case PowerWakeup::P2:
+        case PowerUpSource::P0:
+        case PowerUpSource::P1:
+        case PowerUpSource::P2:
         {
             MicroBitPin *pin = getPin((int)source);
             return pin->isWakeOnActive() ? true : false;
@@ -207,6 +227,16 @@ bool wakeOnIsEnabled(PowerWakeup source) {
     }
 #endif
     return false;
+}
+
+
+/**
+  * Set the source to trigger power-up.
+  * @param source the source to set
+  */
+//%
+void powerUpOn(PowerUpSource source) {
+    powerUpEnable(source, true);
 }
 
 
