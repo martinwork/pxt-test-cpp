@@ -10,12 +10,14 @@ namespace power {
     /**
      * Request power-down when the next idle
      */
+    //% blockHidden=true
     //% shim=power::deepSleepAsync
     function deepSleepAsync(): void { basic.pause(0) }
 
     /**
      * Request power-down when the next idle and wait
      */
+    //% blockHidden=true
     //% shim=power::deepSleep
     function deepSleep(): void { basic.pause(0) }
 
