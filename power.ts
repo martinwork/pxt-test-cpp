@@ -39,18 +39,13 @@ namespace power {
     //% help=power/request-power-down
     //% blockGap=8
     //% group="micro:bit (V2)"
-    //% weight=400
+    //% weight=800
     //% block="request power down||and $mode"
-    export function powerDownRequest( mode: PowerDownMode): void {
-        switch ( mode)
-        {
-            case PowerDownMode.proceed:
-                powerc.powerDownAndContinue();
-                break;
-
-            case PowerDownMode.wait:
-                powerc.powerDownAndWait();
-                break;
+    export function powerDownRequest( mode?: PowerDownMode): void {
+        if ( mode === PowerDownMode.wait) {
+            powerc.powerDownAndWait()
+        } else {
+            powerc.powerDownAndContinue();
         }
     }
 
