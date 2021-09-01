@@ -4,22 +4,33 @@
  * SPDX-License-Identifier: MIT
  */
 
+const enum PowerUpSource {
+    A = 1,  // MICROBIT_ID_BUTTON_A
+    B = 2,  // MICROBIT_ID_BUTTON_B
+    P0 = 100,  // MICROBIT_ID_IO_P0
+    P1 = 101,  // MICROBIT_ID_IO_P1
+    P2 = 102,  // MICROBIT_ID_IO_P2
+}
 
+
+const enum PowerDownEnable {
+    prevent = 0,
+    allow = 1,
+}
+
+
+const enum PowerDownMode {
+    //%continue
+    proceed = 0,
+    wait = 1,
+}
+
+
+
+//% block="Power"
+//% icon="\uf011"
+//% color=#AA278D
 namespace power {
-
-    /**
-     * Request power-down when the next idle
-     */
-    //% blockHidden=true
-    //% shim=power::deepSleepAsync
-    function deepSleepAsync(): void { basic.pause(0) }
-
-    /**
-     * Request power-down when the next idle and wait
-     */
-    //% blockHidden=true
-    //% shim=power::deepSleep
-    function deepSleep(): void { basic.pause(0) }
 
     /**
      * Request power-down when the next idle
@@ -29,23 +40,22 @@ namespace power {
     //% blockGap=8
     //% group="micro:bit (V2)"
     //% weight=400
-    //% block="request power down||$mode"
-    export function powerDownRequest( mode: PowerDownMode): void
-    {
+    //% block="request power down||and $mode"
+    export function powerDownRequest( mode: PowerDownMode): void {
         switch ( mode)
         {
             case PowerDownMode.proceed:
-                deepSleepAsync();
+                powerc.powerDownAndContinue();
                 break;
 
             case PowerDownMode.wait:
-                deepSleep();
+                powerc.powerDownAndWait();
                 break;
         }
     }
 
     /**
-     * Pause for a fixed interval, requesting power-down when next idle.
+     * Request power-down when the next idle, and pause for a fixed interval.
      * @param interval The period of time to pause, in milliseconds.
      */
     //% help=power/power-down-for
@@ -54,8 +64,9 @@ namespace power {
     //% weight=700
     //% block="power down for $interval ms"
     //% interval.shadow=longTimePicker
-    //% shim=power::powerDownFor
-    function powerDownFor(interval: int32): void { basic.pause(interval) }
+    export function powerDownFor(interval: number): void {
+        powerc.powerDownAndPause( interval)
+    }
 
     /**
      * Do something repeatedy using a power-up timer.
@@ -69,29 +80,40 @@ namespace power {
     //% group="micro:bit (V2)"
     //% weight=600
     //% block="power up every $interval ms"
-    //% shim=power::powerUpEvery
-    function powerUpEvery(interval: int32, body: () => void): void { loops.everyInterval(interval, body) }
+    export function powerUpEvery(interval: number, body: () => void): void {
+        powerc.powerUpEvery( interval, body)
+    }
 
     /**
      * Prevent or allow power-down during deepSleep.
      * Prevent and allow requests should occur in pairs.
      * The default is to allow.
      */
-    //% help=power/power-down-control
+    //% help=power/power-down-enable
     //% blockGap=8
     //% group="micro:bit (V2)"
     //% weight=500
-    //% block="power down %control"
-    //% shim=power::powerDownControl
-    function powerDownControl(control: PowerDownControl): void { basic.pause(0) }
+    //% block="power down %enable"
+    export function powerDownEnable(enable: PowerDownEnable): void {
+        switch (enable)
+        {
+            case PowerDownEnable.prevent:
+                powerc.powerDownDisable();
+                break; 
+            case PowerDownEnable.allow:
+                powerc.powerDownEnable();
+                break; 
+        }
+    }
 
     /**
      * Determine if power-down during deepSleep is allowed
      */
-    //% help=power/power-down-allowed
+    //% help=power/power-down-enabled
     //% group="micro:bit (V2)"
-    //% shim=power::powerDownIsAllowed
-    function powerDownIsAllowed(): boolean { return false }
+    export function powerDownIsEnabled(): boolean {
+        return powerc.powerDownIsEnabled()
+    }
 
     /**
      * Set whether the source should trigger power-up.
@@ -100,8 +122,9 @@ namespace power {
      */
     //% help=power/power-up-enable
     //% group="micro:bit (V2)"
-    //% shim=power::powerUpEnable
-    function powerUpEnable(source: PowerUpSource, enable: boolean): void { basic.pause(0) }
+    export function powerUpEnable(source: PowerUpSource, enable: boolean): void {
+        powerc.powerUpEnable(source, enable)
+    }
 
     /**
      * Determine if the source will trigger power-up.
@@ -109,8 +132,9 @@ namespace power {
      * @return true if power-up is enabled
      */
     //% help=power/power-up-is-enabled
-    //% shim=power::powerUpIsEnabled
-    function powerUpIsEnabled(source: PowerUpSource): boolean { return false }
+    export function powerUpIsEnabled(source: PowerUpSource): boolean {
+        return powerc.powerUpIsEnabled(source)
+    }
 
     /**
      * Set the source to trigger power-up.
@@ -121,6 +145,7 @@ namespace power {
     //% group="micro:bit (V2)"
     //% weight=900
     //% block="power up on %source"
-    //% shim=power::powerUpOn
-    function powerUpOn(source: PowerUpSource): void { basic.pause(0) }
+    export function powerUpOn(source: PowerUpSource): void {
+        powerc.powerUpEnable(source, true)
+    }
 }

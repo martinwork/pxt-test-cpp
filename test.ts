@@ -5,14 +5,14 @@
  */
 
 function flash(x: number) {
-    power.powerDownControl(PowerDownControl.prevent)
+    power.powerDownEnable(PowerDownEnable.prevent)
     led.plot(x, 0)
     basic.pause(1000)
     led.unplot(x, 0)
     led.plot(x, 1)
     basic.pause(1000)
     led.unplot(x, 1)
-    power.powerDownControl(PowerDownControl.allow)
+    power.powerDownEnable(PowerDownEnable.allow)
 }
 
 input.onButtonPressed(Button.A, function () {
@@ -26,6 +26,7 @@ input.onButtonPressed(Button.B, function () {
 })
 
 basic.showString("POWER")
+led.plot(0, 4)
 power.powerUpOn(PowerUpSource.A)
 power.powerUpOn(PowerUpSource.B)
 
