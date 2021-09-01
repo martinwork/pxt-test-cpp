@@ -72,28 +72,6 @@ void deepSleep() {
 #endif
 }
 
-/**
-  * Request power-down when the next idle
-  * @param mode If continue, then return immediately; if wait, then pause until a power-up event occurs 
-  */
-//%
-void powerDownRequest(PowerDownMode mode) {
-#if MICROBIT_CODAL
-    switch ( mode)
-    {
-        case PowerDownMode::proceed:
-            uBit.power.deepSleepAsync();
-            break;
-
-        case PowerDownMode::wait:
-            uBit.power.deepSleep();
-            break;
-    }
-#else
-    uBit.sleep(0);
-#endif
-}
-
 
 /**
   * Pause for a fixed interval, requesting power-down when next idle.

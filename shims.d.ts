@@ -16,13 +16,6 @@ declare namespace power {
     function deepSleep(): void;
 
     /**
-     * Request power-down when the next idle
-     * @param mode If continue, then return immediately; if wait, then pause until a power-up event occurs 
-     */
-    //% shim=power::powerDownRequest
-    function powerDownRequest(mode: PowerDownMode): void;
-
-    /**
      * Pause for a fixed interval, requesting power-down when next idle.
      * @param interval The period of time to pause, in milliseconds.
      */

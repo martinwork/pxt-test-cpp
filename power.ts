@@ -30,8 +30,7 @@ namespace power {
     //% group="micro:bit (V2)"
     //% weight=400
     //% block="request power down||$mode"
-    //% shim=power::powerDownRequest
-    function powerDownRequest( mode: PowerDownMode): void
+    export function powerDownRequest( mode: PowerDownMode): void
     {
         switch ( mode)
         {
