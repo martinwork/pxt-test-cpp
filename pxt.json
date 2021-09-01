@@ -1,17 +1,17 @@
 {
     "name": "power",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "Power saving. micro:bit (V2) only.",
     "dependencies": {
         "core": "*"
     },
     "files": [
-        "README.md",
+        "power.ts",
         "powerc.cpp",
         "powerc.ts",
-        "power.ts",
         "shims.d.ts",
-        "enums.d.ts"
+        "enums.d.ts",
+        "README.md"
     ],
     "testFiles": [
         "test.ts"

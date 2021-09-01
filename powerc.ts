@@ -11,7 +11,7 @@ namespace powerc {
      * Request power-down when the next idle, and wait until a power-up event occurs 
      */
     //% shim=powerc::powerDownAndWait
-    function powerDownAndWait(): void { 
+    export function powerDownAndWait(): void { 
         basic.pause(0)
     }
 
@@ -19,7 +19,7 @@ namespace powerc {
      * Request power-down when the next idle, then return immediately
      */
     //% shim=powerc::powerDownAndContinue
-    function powerDownAndContinue(): void {
+    export function powerDownAndContinue(): void {
         basic.pause(0)
     }
 
@@ -28,7 +28,7 @@ namespace powerc {
      * @param interval The period of time to pause, in milliseconds.
      */
     //% shim=powerc::powerDownAndPause
-    function powerDownAndPause(interval: int32): void {
+    export function powerDownAndPause(interval: int32): void {
         basic.pause(interval)
     }
 
@@ -38,7 +38,7 @@ namespace powerc {
      * The default is enabled.
      */
     //% shim=powerc::powerDownDisable
-    function powerDownDisable(): void {
+    export function powerDownDisable(): void {
         basic.pause(0)
     }
 
@@ -48,7 +48,7 @@ namespace powerc {
      * The default is enabled.
      */
     //% shim=powerc::powerDownEnable
-    function powerDownEnable(): void {
+    export function powerDownEnable(): void {
         basic.pause(0)
     }
 
@@ -56,7 +56,7 @@ namespace powerc {
      * Determine if power-down requests are enabled
      */
     //% shim=powerc::powerDownIsEnabled
-    function powerDownIsEnabled(): boolean {
+    export function powerDownIsEnabled(): boolean {
         return false
     }
 
@@ -66,7 +66,7 @@ namespace powerc {
      * @param body code to execute
      */
     //% shim=powerc::powerUpEvery
-    function powerUpEvery(interval: int32, body: () => void): void {
+    export function powerUpEvery(interval: int32, body: () => void): void {
         loops.everyInterval(interval, body)
     }
 
@@ -76,7 +76,7 @@ namespace powerc {
      * @param enable true to trigger power-up or false for no power-up.
      */
     //% shim=powerc::powerUpEnable
-    function powerUpEnable(sourceID: int32, enable: boolean): void {
+    export function powerUpEnable(sourceID: int32, enable: boolean): void {
         basic.pause(0)
     }
 
@@ -86,7 +86,7 @@ namespace powerc {
      * @return true if power-up is enabled
      */
     //% shim=powerc::powerUpIsEnabled
-    function powerUpIsEnabled(sourceID: int32): boolean {
+    export function powerUpIsEnabled(sourceID: int32): boolean {
         return false
     }
 }
