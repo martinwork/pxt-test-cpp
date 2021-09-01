@@ -49,6 +49,7 @@ int timerEventValue  = 1;
 /**
   * Request power-down when the next idle
   */
+//% blockHidden=true
 //%
 void deepSleepAsync() {
 #if MICROBIT_CODAL
@@ -61,6 +62,7 @@ void deepSleepAsync() {
 /**
   * Request power-down when the next idle and wait
   */
+//% blockHidden=true
 //%
 void deepSleep() {
 #if MICROBIT_CODAL
