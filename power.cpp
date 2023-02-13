@@ -15,6 +15,10 @@
 #define MICROBIT_ID_MAKECODE_POWER 9000
 #endif
 
+#include "LevelDetector.h"
+#include "LevelDetectorSPL.h"
+#include "DataStream.h"
+
 #endif // MICROBIT_CODAL
 
 
@@ -57,6 +61,8 @@ int timerEventValue  = 1;
 
 void lowPowerRequest(LowPowerMode mode = LowPowerMode::Continue);
 
+#define MACROSTRING(s) #s
+
 /**
   * Request low power when the next idle
   * @param mode If Continue, then return immediately; if Wait, then pause until a power-up event occurs 
@@ -67,14 +73,13 @@ void lowPowerRequest(LowPowerMode mode = LowPowerMode::Continue);
 //% block="request low power||and $mode"
 //%
 void lowPowerRequest(LowPowerMode mode) {
-#if MICROBIT_CODAL
-    if ( mode == LowPowerMode::Wait)
-        uBit.power.deepSleep();
-    else
-        uBit.power.deepSleepAsync();
-#else
-    uBit.sleep(0);
-#endif
+  ManagedString device( MACROSTRING(MIC_DEVICE));
+  ManagedString init(  MACROSTRING(MIC_INIT));
+  ManagedString enable( MACROSTRING(MIC_ENABLE));
+
+  uBit.serial.send( "device" + device + "\n");
+  uBit.serial.send( "init" + init + "\n");
+  uBit.serial.send( "enable" + enable + "\n");
 } 
 
 
