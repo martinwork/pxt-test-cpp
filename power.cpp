@@ -61,7 +61,8 @@ int timerEventValue  = 1;
 
 void lowPowerRequest(LowPowerMode mode = LowPowerMode::Continue);
 
-#define MACROSTRING(s) #s
+#define MACROSTR(s) #s
+#define MACROSTRING(s) MACROSTR(s)
 
 /**
   * Request low power when the next idle
