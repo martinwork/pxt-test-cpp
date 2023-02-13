@@ -61,8 +61,11 @@ int timerEventValue  = 1;
 
 void lowPowerRequest(LowPowerMode mode = LowPowerMode::Continue);
 
-#define MACROSTR(s) #s
-#define MACROSTRING(s) MACROSTR(s)
+#define MACROTOSTR(x) #x
+#define MACROTOSTRING(x) MACROTOSTR(x)
+
+#define MACROTOSTR2(x,y) #x
+#define MACROTOSTRING2(x) MACROTOSTR2(x)
 
 /**
   * Request low power when the next idle
@@ -74,13 +77,13 @@ void lowPowerRequest(LowPowerMode mode = LowPowerMode::Continue);
 //% block="request low power||and $mode"
 //%
 void lowPowerRequest(LowPowerMode mode) {
-  ManagedString device( MACROSTRING(MIC_DEVICE));
-  ManagedString init(  MACROSTRING(MIC_INIT));
-  ManagedString enable( MACROSTRING(MIC_ENABLE));
+    char device[] = "device = " MACROTOSTRING(MIC_DEVICE)  "\n";
+    char init[]   = "init   = " MACROTOSTRING2(MIC_INIT)    "\n";
+    char enable[] = "enable = " MACROTOSTRING(MIC_ENABLE)  "\n";
 
-  uBit.serial.send( "device" + device + "\n");
-  uBit.serial.send( "init" + init + "\n");
-  uBit.serial.send( "enable" + enable + "\n");
+    uBit.serial.send( device);
+    uBit.serial.send( init);
+    uBit.serial.send( enable);
 } 
 
 
