@@ -64,8 +64,10 @@ void lowPowerRequest(LowPowerMode mode = LowPowerMode::Continue);
 #define MACROTOSTR(x) #x
 #define MACROTOSTRING(x) MACROTOSTR(x)
 
-#define MACROTOSTR2(x,y) #x
-#define MACROTOSTRING2(x) MACROTOSTR2(x)
+#define MACROTOSTR20(x,y) #x
+#define MACROTOSTR21(x,y) #y
+#define MACROTOSTRING20(x) MACROTOSTR20(x)
+#define MACROTOSTRING21(x) MACROTOSTR21(x)
 
 /**
   * Request low power when the next idle
@@ -79,7 +81,7 @@ void lowPowerRequest(LowPowerMode mode = LowPowerMode::Continue);
 void lowPowerRequest(LowPowerMode mode) {
 #if MICROBIT_CODAL
     char device[] = "device = " MACROTOSTRING(MIC_DEVICE)  "\n";
-    char init[]   = "init   = " MACROTOSTRING2(MIC_INIT)    "\n";
+    char init[]   = "init   = " MACROTOSTRING20(MIC_INIT) " , " MACROTOSTRING21(MIC_INIT)    "\n";
     char enable[] = "enable = " MACROTOSTRING(MIC_ENABLE)  "\n";
 
     uBit.serial.send( device);
