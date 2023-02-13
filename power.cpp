@@ -77,6 +77,7 @@ void lowPowerRequest(LowPowerMode mode = LowPowerMode::Continue);
 //% block="request low power||and $mode"
 //%
 void lowPowerRequest(LowPowerMode mode) {
+#if MICROBIT_CODAL
     char device[] = "device = " MACROTOSTRING(MIC_DEVICE)  "\n";
     char init[]   = "init   = " MACROTOSTRING2(MIC_INIT)    "\n";
     char enable[] = "enable = " MACROTOSTRING(MIC_ENABLE)  "\n";
@@ -84,6 +85,7 @@ void lowPowerRequest(LowPowerMode mode) {
     uBit.serial.send( device);
     uBit.serial.send( init);
     uBit.serial.send( enable);
+#endif // MICROBIT_CODAL
 } 
 
 
